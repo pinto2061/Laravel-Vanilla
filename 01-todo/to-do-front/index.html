@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasky - Gestor de Tareas</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Local stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- SIDEBAR: LEFT SIDE -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <i class="fa-solid fa-square-check"></i>
+                <span>Tasky</span>
+            </div>
+            <!-- API Settings Icon -->
+            <div class="api-config-trigger" id="apiConfigBtn" title="Configurar API Host">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+        </div>
+
+        <div class="sidebar-controls">
+            <button class="btn-new-task" id="btnNewTask">
+                <i class="fa-solid fa-plus"></i> Nueva Tarea
+            </button>
+            
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Buscar tareas...">
+            </div>
+
+            <div class="filter-tabs" id="filterTabs">
+                <button class="tab active" data-status="all">Todas</button>
+                <button class="tab" data-status="pendiente">Pendiente</button>
+                <button class="tab" data-status="en progreso">En progreso</button>
+                <button class="tab" data-status="completada">Completada</button>
+            </div>
+        </div>
+
+        <!-- Task list scrollable section -->
+        <div class="task-list-container" id="taskList">
+            <!-- Loader Skeletons or task cards will be rendered dynamically -->
+        </div>
+
+        <!-- Sidebar footer with pagination controls -->
+        <div class="sidebar-footer">
+            <span class="pagination-info" id="paginationInfo">Cargando...</span>
+            <div class="pagination-actions">
+                <button class="btn-icon" id="btnPrevPage" disabled title="Página Anterior">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="btn-icon" id="btnNextPage" disabled title="Siguiente Página">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN VIEW AREA: RIGHT SIDE -->
+    <main class="main-content" id="mainContent">
+        <!-- Default Welcome View -->
+        <div class="welcome-panel" id="welcomePanel">
+            <div class="welcome-graphic">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+            <h2>Bienvenido a Tasky</h2>
+            <p>Selecciona una tarea del menú lateral para ver sus detalles, editarla o eliminarla. También puedes crear una nueva tarea pulsando el botón superior.</p>
+            <button class="btn btn-primary" id="btnWelcomeCreate">
+                <i class="fa-solid fa-plus"></i> Crear mi primera tarea
+            </button>
+        </div>
+
+        <!-- Dynamic Task Details View (Hidden by default) -->
+        <div class="details-panel" id="detailsPanel" style="display: none;">
+            <div class="details-header">
+                <div class="details-title-wrapper">
+                    <h2 class="details-title" id="detailsTitle">Título de la Tarea</h2>
+                    <div class="details-meta">
+                        <span><i class="fa-regular fa-calendar"></i> Creado: <span id="detailsCreatedAt">--/--/----</span></span>
+                        <span><i class="fa-regular fa-clock"></i> Actualizado: <span id="detailsUpdatedAt">--/--/----</span></span>
+                    </div>
+                </div>
+                
+                <div class="details-status-control">
+                    <label for="detailsStatusSelect" class="badge" id="detailsStatusBadge">pendiente</label>
+                    <select class="details-status-select" id="detailsStatusSelect">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en progreso">En progreso</option>
+                        <option value="completada">Completada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="details-desc-box" id="detailsDescription">
+                Descripción detallada...
+            </div>
+
+            <div class="details-actions">
+                <button class="btn btn-danger" id="btnDeleteTask">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar
+                </button>
+                <button class="btn btn-secondary" id="btnEditTask">
+                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                </button>
+            </div>
+        </div>
+
+        <!-- Task Create/Edit Form View (Hidden by default) -->
+        <div class="form-panel" id="formPanel" style="display: none;">
+            <h2 class="form-title" id="formTitle">Nueva Tarea</h2>
+            <form id="taskForm">
+                <input type="hidden" id="formTaskId">
+                
+                <div class="form-group">
+                    <label for="formInputTitle">Título de la tarea</label>
+                    <input type="text" id="formInputTitle" class="form-input" placeholder="Ej. Comprar materiales para oficina" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="formSelectStatus">Estatus inicial</label>
+                    <select id="formSelectStatus" class="form-select">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en progreso">En progreso</option>
+                        <option value="completada">Completada</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="formTextareaDesc">Descripción</label>
+                    <textarea id="formTextareaDesc" class="form-textarea" placeholder="Escribe los detalles de la tarea..." required></textarea>
+                </div>
+
+                <div class="details-actions">
+                    <button type="button" class="btn btn-secondary" id="btnCancelForm">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitForm">Guardar Tarea</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Modal for API Configuration -->
+    <div class="modal-overlay" id="apiConfigModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Configuración de la API</h3>
+                <button class="modal-close" id="apiConfigClose">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="apiHostInput">API Base URL</label>
+                <input type="url" id="apiHostInput" class="form-input" placeholder="http://to-do-api.test/api" value="http://to-do-api.test/api">
+            </div>
+            <div class="details-actions" style="margin-top: 1rem;">
+                <button class="btn btn-secondary" id="btnCancelApiConfig">Cancelar</button>
+                <button class="btn btn-primary" id="btnSaveApiConfig">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>

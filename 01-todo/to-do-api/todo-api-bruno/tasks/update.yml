@@ -1,0 +1,23 @@
+info:
+  name: update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://to-do-api.test/api/task/23
+  body:
+    type: json
+    data: |-
+      {
+        "titulo":"ejemplo bruno id 23",
+        "descripcion":"ejemplo UPDATe",
+        "status":"completed"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

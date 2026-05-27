@@ -1,0 +1,23 @@
+info:
+  name: store
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://to-do-api.test/api/task
+  body:
+    type: json
+    data: |-
+      {
+        "titulo":"ejemplo bruno id 24",
+        "descripcion":"ejemplo",
+        "status":"pendiente"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
